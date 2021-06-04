@@ -1,5 +1,8 @@
 <template>
-  <v-app>
+  <div class="container">
+
+  <v-app v-if="patient">
+    <h4>Médicos</h4>
     <v-card>
       <v-card-title>
         <v-text-field
@@ -17,10 +20,16 @@
       ></v-data-table>
     </v-card>
   </v-app>
+
+  <div v-else class="alert alert-danger" role="alert">
+    No tienes permiso para acceder a este contenido. <a href="/home" class="alert-link">Ir a principal</a>.
+  </div>
+  </div>
 </template>
 
 <script>
 import axios from 'axios'
+import Cookies from "js-cookie";
 
 export default {
   data () {
@@ -28,6 +37,9 @@ export default {
       loading: true,
       doctors: [],
       search: '',
+      patient:false,
+      userLogged:false,
+
       headers: [
         {text: 'Name', value: 'name'},
         { text: 'Lastname', value: 'lastname' },
@@ -40,6 +52,21 @@ export default {
     }
   },
   methods: {
+    userLoggedF() {
+      this.user= Cookies.get('userLogged');
+
+      if (this.user==null){
+        this.userLogged=false
+      }
+      else{
+        this.userLogged=true
+        let aux=JSON.parse(this.user)
+        console.log(aux['role'])
+        if(aux['role']=='2'){
+          this.patient=true;
+        }
+      }
+    },
     //Reading data from API method.
     readDataFromAPI() {
       this.loading = true;
@@ -66,6 +93,7 @@ export default {
   //this will trigger in the onReady State
   mounted() {
     this.readDataFromAPI();
+    this.userLoggedF();
   },
 }
 </script>

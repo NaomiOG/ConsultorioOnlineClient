@@ -111,7 +111,7 @@ select{
   background-image: none;
   border: 1px solid white;
   color: white;
-  user-focus: all;
+
 }
 select option{
   padding: 10px 15px;

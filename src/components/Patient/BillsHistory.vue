@@ -1,7 +1,8 @@
 <template>
-  <v-app>
+  <div class="container">
+  <v-app v-if="patient">
     <v-card>
-      <h4>Consultas Previas</h4>
+      <h4>Historial de facturas</h4>
       <v-card-title>
         <v-text-field
             v-model="search"
@@ -13,86 +14,87 @@
       </v-card-title>
       <v-data-table
           :headers="headers"
-          :items="consultations"
+          :items="bills"
           :search="search"
       >
 
-        <template v-slot:item.prescription="{ item }">
+        <template v-slot:item.file="{ item }">
           <v-btn
               class="mx-2 btn-info"
               fab
               dark
               small
               color="#17bbb5"
-              @click.native="openPrescription(item)"
+              @click.native="openBill(item)"
           >
-            <a :href="'http://127.0.0.1:8000/prescriptions/receta.pdf'" class="algo" target="_blank">
-            <v-icon
-                dark
-                color="#fff"
-            >
-              mdi-clipboard-text-search-outline
-            </v-icon></a>
-          </v-btn>
-        </template>
-
-        <template v-slot:item.online_store>
-          <v-btn
-              class="mx-2 btn-info"
-              fab
-              dark
-              small
-              color="#17bbb5"
-          >
-            <a :href="'https://www.linio.com.mx/'" class="algo" target="_blank">
+            <a :href="item.file" class="algo" target="_blank">
               <v-icon
-                  class="mx-4"
                   dark
                   color="#fff"
               >
-                mdi-cart
-              </v-icon>
-            </a>
+                mdi-clipboard-text-search-outline
+              </v-icon></a>
           </v-btn>
         </template>
       </v-data-table>
 
     </v-card>
   </v-app>
+    <div v-else class="alert alert-danger" role="alert">
+      No tienes permiso para acceder a este contenido. <a href="/home" class="alert-link">Ir a principal</a>.
+    </div>
+  </div>
 </template>
 
 <script>
 import axios from 'axios'
+import Cookies from "js-cookie";
 
 export default {
   data () {
     return {
+      patient:false,
+      userLogged:false,
       loading: true,
-      id_patient: 3,
-      consultations: [],
+      id_patient: 1,
+      bills: [],
       search: '',
       headers: [
         {text: 'Fecha', value: 'consultation_date'},
         { text: 'Especialidad', value: 'speciality' },
-        { text: 'Doctor', value: 'doctor_name' },
-        { text: 'Estatus de atención', value: 'atention_status' },
-        { text: 'Ver receta', value: 'prescription' },
-        { text: 'Surtir en línea', value: 'online_store' },
+        { text: 'Doctor', value: 'doctor' },
+        { text: 'Ver factura', value: 'file' },
       ],
     }
   },
   mounted() {
+    this.userLoggedF()
     this.readDataFromAPI();
   },
   methods: {
+    userLoggedF() {
+      this.user= Cookies.get('userLogged');
+
+      if (this.user==null){
+        this.userLogged=false
+      }
+      else{
+        this.userLogged=true
+        let aux=JSON.parse(this.user)
+        console.log(aux['role'])
+        if(aux['role']=='2'){
+          this.patient=true;
+        }
+      }
+    },
     //Reading data from API method.
     readDataFromAPI() {
       this.loading = true;
       axios
-          .get("http://127.0.0.1:8000/medicalconsultation/patient/"+this.id_patient)
+          .get("http://127.0.0.1:8000/patient/"+this.id_patient+"/bills")
           .then((response) => {
             console.log(response.data);
-            this.consultations = response.data;
+            this.bills = response.data;
           })
           .catch(function (error) {
             if (error.response) {
@@ -107,7 +109,7 @@ export default {
             console.log(error.config);
           });
     },
-    openPrescription(idConsultation){
+    openBill(idConsultation){
       console.log(idConsultation.id);
     },
   },

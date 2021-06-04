@@ -16,13 +16,23 @@
         <input v-model="lastname" type="text" class="form-control" id="inputLastname" placeholder="Apellidos">
       </div>
       <div class="form-group">
-        <label for="inputAddress">Address</label>
+        <label for="inputAddress">Dirección</label>
         <input v-model="address" type="text" class="form-control" id="inputAddress" placeholder="Dirección">
       </div>
       <div class="form-row">
         <div class="form-group col-md-6">
-          <label for="inputPhone">Phone</label>
-          <input v-model="phone" type="next" class="form-control" id="inputPhone" placeholder="Teléfono">
+          <label for="inputLatitud">Latitud</label>
+          <input v-model="latitud" type="text" class="form-control" id="inputLatitud" placeholder="Latitud">
+        </div>
+        <div class="form-group col-md-6">
+          <label for="inputLongitud">Longitud</label>
+          <input type="text" v-model="longitud" class="form-control" id="inputLongitud" placeholder="Longitud">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label for="inputPhone">Teléfono</label>
+          <input v-model="phone" type="text" class="form-control" id="inputPhone" placeholder="Teléfono">
         </div>
         <div class="form-group col-md-6">
           <label for="inputBirthdate">Fecha de nacimiento</label>
@@ -73,13 +83,18 @@ export default {
       birthdate:'',
       phone:'',
       email:'',
-      id_user:3,
-      status_covid:'',
+      id_user:'',
+      latitud:'',
+      longitud:'',
+      status_covid:'negativo',
       isLoading:false
     }
   },
   mounted() {
-
+    axios.get("http://127.0.0.1:8000/userlast")
+        .then((response)=>{
+          this.id_user=response.data.id
+        })
   },
   methods:{
     onSubmit(){
@@ -90,7 +105,7 @@ export default {
     sendCreatePatient(){
 
       if (this.name==""||this.lastname==""||this.address==""||this.email==""||this.country==""||this.birthdate==""||this.city==""
-          ||this.phone==""||this.state=="") {
+          ||this.phone==""||this.state==""||this.longitud==""||this.latitud=="") {
         alert("Completa todos los campos")
       }
       else {
@@ -105,6 +120,8 @@ export default {
         formData.append('phone',this.phone)
         formData.append('email', this.email)
         formData.append('id_user', this.id_user)
+        formData.append('latitud',this.latitud)
+        formData.append('longitud',this.longitud)
         formData.append('status_covid',this.status_covid)
 
         let object = {};
@@ -115,10 +132,11 @@ export default {
 
         axios.post("http://127.0.0.1:8000/patient",json
         ).then(response => {
-          this.name=''
+
           console.log(response.data)
-          alert('Los datos del paciente se han almacenado correctamente')
+          //alert('Los datos del paciente se han almacenado correctamente')
           this.isLoading = false
+          location.href ="/login"
         })
             .catch(error => {
               alert(error)

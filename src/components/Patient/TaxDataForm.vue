@@ -36,7 +36,9 @@
       </div>
     </form>
     </div>
-    <p v-else>No tienes permiso para acceder a este contenido</p>
+    <div v-else class="alert alert-danger" role="alert">
+      No tienes permiso para acceder a este contenido. <a href="/home" class="alert-link">Ir a principal</a>.
+    </div>
   </div>
 
 </template>
@@ -44,6 +46,7 @@
 <script>
 import Cookies from "js-cookie";
 import axios from "axios";
+
 export default {
 
   data(){
@@ -56,12 +59,16 @@ export default {
       id_payment:'',
       payment:'',
       userLogged:false,
-      patient:false
+      patient:false,
+      submit:true
 
     }
   },
-  mounted() {
+  created() {
     this.userLoggedF()
+  },
+  mounted() {
+
     axios.get("http://127.0.0.1:8000/payment")
         .then((response)=>{
           this.payment=response.data
@@ -82,28 +89,32 @@ export default {
           this.patient=true;
           axios.get("http://127.0.0.1:8000/patient/user/"+aux['id'])
               .then((response)=>{
-                this.name=response.data.name
+                this.name=response.data.name+response.data.lastname
                 this.id_patient=response.data.id
                 axios.get("http://127.0.0.1:8000/taxdata/patient/"+this.id_patient)
                     .then((response2)=>{
                       this.aux=response2.data
                       if(Object.keys(this.aux).length !== 0){
-                        this.shippingAddress=response2.data.billing_address;
-                        this.billingAddress=response2.data.shipping_date;
+                        this.submit=false;
+                        this.shippingAddress=response2.data.shipping_date;
+                        this.billingAddress=response2.data.billing_address;
                         this.id_payment=response2.data.id_payment
                       }
                     });
               });
-
-
-
 
         }
       }
     },
     onSubmit(){
       this.isLoading = true
-      this.sendCreateTaxData()
+      if(this.submit){
+        this.sendCreateTaxData()
+      }
+      else {
+        this.sendUpdateTaxData()
+      }
+
 
     },
     sendCreateTaxData(){
@@ -128,7 +139,7 @@ export default {
         ).then(response => {
           console.log(response.data)
           this.isLoading = false
-          location.href ="/home"
+          location.href ="/taxData"
         })
             .catch(error => {
               alert(error)
@@ -138,6 +149,39 @@ export default {
       }
 
     },
+    sendUpdateTaxData(){
+
+      if (this.billingAddress==""||this.shippingAddress==""||this.id_payment=="") {
+        alert("Completa todos los campos")
+      }
+      else {
+        const formData = new FormData()
+        formData.append('id_patient', this.id_patient)
+        formData.append('billing_address', this.billingAddress)
+        formData.append('shipping_date',this.shippingAddress)
+        formData.append('id_payment', this.id_payment)
+
+        var object = {};
+        formData.forEach(function(value, key){
+          object[key] = value;
+        });
+        var json = JSON.stringify(object);
+
+        axios.post("http://127.0.0.1:8000/taxdata/update",json,
+        ).then(response => {
+          console.log(response.data)
+          this.isLoading = false
+          location.href ="/taxData"
+        })
+            .catch(error => {
+              alert(error)
+              console.log(json)
+              this.isLoading = false
+            })
+      }
+
+    },
+
 
   }
 }

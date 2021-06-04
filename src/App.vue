@@ -10,8 +10,34 @@
           <li class="nav-item active">
             <router-link to="/home"><a class="nav-link">Home <span class="sr-only">(current)</span></a></router-link>
           </li>
+          <li  v-if="doctor" class="nav-item active">
+            <router-link to="/doctorService"><a class="nav-link">Servicios<span class="sr-only"></span></a></router-link>
+          </li>
+          <li class="nav-item dropdown" v-if="doctor">
+            <a class="nav-link dropdown-toggle" href="#"  role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Consultas Médicas
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+              <router-link to="/consultationList"><a class="dropdown-item">Consultas pendientes</a></router-link>
+              <router-link to="/priorConsultationDoctor"><a class="dropdown-item" href="#">Historial</a></router-link>
+            </div>
+          </li>
+          <li class="nav-item active" v-if="patient">
+            <router-link to="/clinicHistory"><a class="nav-link">Historia Clínica<span class="sr-only">(current)</span></a></router-link>
+          </li>
+
           <li class="nav-item active">
             <router-link v-if="patient" to="/doctors"><a class="nav-link">Médicos</a></router-link>
+          </li>
+
+          <li class="nav-item dropdown" v-if="patient">
+            <a class="nav-link dropdown-toggle" href="#"  role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Consultas Médicas
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+              <router-link to="/registerConsultation"><a class="dropdown-item">Nueva consulta</a></router-link>
+              <router-link to="/priorConsultation"><a class="dropdown-item" href="#">Historial</a></router-link>
+            </div>
           </li>
           <li class="nav-item dropdown" v-if="patient">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -19,17 +45,17 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
               <router-link to="/taxData"><a class="dropdown-item">Datos de facturación</a></router-link>
-              <router-link to="/home"><a class="dropdown-item" href="#">Historial</a></router-link>
+              <router-link to="/billsHistory"><a class="dropdown-item" href="#">Historial</a></router-link>
             </div>
           </li>
-          <li class="nav-item dropdown" v-if="patient">
-            <a class="nav-link dropdown-toggle" href="#"  role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Consultas Médicas
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-              <router-link to="/registerConsultation"><a class="dropdown-item">Nueva consulta</a></router-link>
-              <router-link to="/home"><a class="dropdown-item" href="#">Historial</a></router-link>
-            </div>
+          <li class="nav-item active">
+            <router-link v-if="patient" to="/salesHistory"><a class="nav-link">Compras</a></router-link>
+          </li>
+          <li class="nav-item active">
+            <router-link v-if="patient" to="/mapaCasosCOVID"><a class="nav-link">Casos COVID 19</a></router-link>
+          </li>
+          <li class="nav-item active">
+            <router-link v-if="patient" to="/store"><a class="nav-link">Tienda</a></router-link>
           </li>
           <li class="nav-item active">
             <button class="nav-link" v-on:click="logout" v-if="userLogged" id="btnLogut">Logout</button>

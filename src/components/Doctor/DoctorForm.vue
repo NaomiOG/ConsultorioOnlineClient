@@ -71,7 +71,6 @@
 <script>
 import axios from "axios";
 export default {
-
   data(){
     return{
       name:'',
@@ -136,7 +135,6 @@ export default {
 
         axios.post("http://127.0.0.1:8000/doctor",json
         ).then(response => {
-          this.name=''
           console.log(response.data)
           this.isLoading = false
           location.href ="/login"

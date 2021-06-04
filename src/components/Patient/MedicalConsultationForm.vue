@@ -37,6 +37,7 @@
         <button type="submit" class="btn btn-primary">Guardar</button>
       </div>
     </form>
+    <p v-else>No tienes permiso para acceder a este contenido</p>
   </div>
 </template>
 
@@ -168,6 +169,7 @@ export default {
       ).then(function(){
         console.log('SUCCESS!! MEDICAL CONSULTATION');
         console.log(json);
+
       })
           .catch(function(error){
             console.log(json);
@@ -221,6 +223,7 @@ export default {
       ).then(function(){
         console.log('SUCCESS!! STORAGE FILE' + id);
         console.log(formDataFile);
+        location.href ="/priorConsultation"
       })
           .catch(function(error){
             console.log(formDataFile);
